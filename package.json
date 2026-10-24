@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "i18n:sync": "node ./script/i18n-sync.mjs",
     "i18n:sync:dry": "node ./script/i18n-sync.mjs --dry-run",
-    "test:security": "node --test script/security.test.mjs"
+    "test:security": "node --test script/security.test.mjs",
+    "test:service-worker": "node --test script/service-worker.test.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

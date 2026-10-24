@@ -20,3 +20,4 @@ jobs:
           npm run test:onboarding
           npm run lint
           npm run build
+          npm run test:service-worker

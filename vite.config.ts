@@ -99,22 +99,9 @@ export default defineConfig(({ mode }) => {
           globPatterns: ["**/*.{js,css,ico,png,svg}"],
           maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
           navigateFallback: null,
-          runtimeCaching: [
-            {
-              urlPattern: /^https:\/\/api\./i,
-              handler: "NetworkFirst",
-              options: {
-                cacheName: "api-cache",
-                expiration: {
-                  maxEntries: 10,
-                  maxAgeSeconds: 60 * 60 * 24 * 365, // <== 365 days
-                },
-                cacheableResponse: {
-                  statuses: [0, 200],
-                },
-              },
-            },
-          ],
+          // Authenticated/private API data must always reach the server so
+          // logout, credential revocation and private-site changes take effect.
+          runtimeCaching: [],
         },
       }),
       visualizer({

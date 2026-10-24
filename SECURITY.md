@@ -25,3 +25,5 @@ for the exact reviewed source manifest and remaining boundaries.
 ## First May prerelease
 
 `v0.1.0-rc.1` packages this reviewed monitoring profile. See the [shared security review](https://github.com/mxh110708/may-monitor-server/blob/v0.1.0-rc.1/docs/SECURITY-REVIEW-2026-10-24.zh-CN.md). Release manifests pin all three source commits. No automatic installation or production migration is authorized.
+
+The Service Worker precaches immutable assets only. API responses always go to the server; authenticated data must not be restored from a runtime cache after logout or revocation. Run `npm run test:service-worker` after building.
