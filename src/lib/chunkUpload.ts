@@ -28,7 +28,7 @@ export type ChunkUploadTask = {
   cancel(): void;
 };
 
-export function createChunkUploadTask(basePath: string): ChunkUploadTask {
+export function createChunkUploadTask(basePath: string, extraHeaders: Record<string, string> = {}): ChunkUploadTask {
   const controller = new AbortController();
   const activeXhrs = new Set<XMLHttpRequest>();
   let uploadID = "";
@@ -42,7 +42,7 @@ export function createChunkUploadTask(basePath: string): ChunkUploadTask {
     if (uploadID) {
       void fetch(`${basePath}/cancel`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...extraHeaders },
         body: JSON.stringify({ upload_id: uploadID }),
       });
     }
@@ -84,6 +84,7 @@ export function createChunkUploadTask(basePath: string): ChunkUploadTask {
       form.append("chunk_index", String(index));
       form.append("chunk_data", chunk, `chunk-${index}`);
       xhr.open("POST", `${basePath}/chunk`);
+      for (const [key, value] of Object.entries(extraHeaders)) xhr.setRequestHeader(key, value);
       xhr.send(form);
     });
 
@@ -97,7 +98,7 @@ export function createChunkUploadTask(basePath: string): ChunkUploadTask {
       try {
         const initResponse = await fetch(`${basePath}/init`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", ...extraHeaders },
           body: JSON.stringify({ purpose, size: file.size, filename: file.name }),
           signal: controller.signal,
         });
@@ -157,7 +158,7 @@ export function createChunkUploadTask(basePath: string): ChunkUploadTask {
 
         const mergeResponse = await fetch(`${basePath}/merge`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", ...extraHeaders },
           body: JSON.stringify({ upload_id: uploadID }),
           signal: controller.signal,
         });

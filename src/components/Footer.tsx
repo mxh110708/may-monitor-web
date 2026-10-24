@@ -2,6 +2,7 @@ import { Flex, Text } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
 import { useRPC2Call } from "@/contexts/RPC2Context";
 import { usePublicInfo } from "@/contexts/PublicInfoContext";
+import DOMPurify from "dompurify";
 
 const Footer = () => {
   //const currentYear = new Date().getFullYear();
@@ -57,7 +58,7 @@ const Footer = () => {
         >
           <span
             dangerouslySetInnerHTML={{
-              __html: customFooterHtml,
+              __html: DOMPurify.sanitize(customFooterHtml, { USE_PROFILES: { html: true } }),
             }}
           ></span>
           <Text size="2" color="gray">

@@ -363,7 +363,7 @@ const TwoFactorDisabled = () => {
   React.useEffect(() => {
     if (isOpen) {
       setIsLoading(true);
-      fetch("/api/admin/2fa/generate")
+      fetch("/api/admin/2fa/generate", { method: "POST" })
         .then((response) => {
           if (!response.ok) {
             throw new Error(t("account.qr_fetch_error"));

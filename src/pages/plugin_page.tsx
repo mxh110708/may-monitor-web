@@ -22,7 +22,7 @@ export default function PluginPage() {
       <iframe
         title={`${short}/${filepath}`}
         src={src}
-        sandbox="allow-forms allow-modals allow-popups allow-same-origin allow-scripts"
+        sandbox="allow-forms allow-modals allow-popups allow-scripts"
         className="km-plugin-frame h-full min-h-[calc(100vh-96px)] w-full border-0"
       />
     </Box>

@@ -7,6 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import { Box, Button, Flex, Heading, Tabs } from "@radix-ui/themes";
+import DOMPurify from "dompurify";
 import { useTranslation } from "react-i18next";
 import {
   SettingCard,
@@ -340,7 +341,7 @@ const ConfigFormTabs = ({
         <Box
           key={`textbox-${index}`}
           className="km-config-textbox"
-          dangerouslySetInnerHTML={{ __html: title || "" }}
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(title || "", { USE_PROFILES: { html: true } }) }}
         />
       );
     }

@@ -33,12 +33,16 @@ type APIResponse<T> = {
 };
 type InstallStatus = { state: string; required: boolean };
 
+function setupHeaders(): Record<string, string> {
+  return { "X-May-Setup-Token": new URLSearchParams(window.location.hash.slice(1)).get("setup") || "" };
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`/api/install${path}`, {
     ...init,
     headers: init?.body
-      ? { "Content-Type": "application/json", ...init.headers }
-      : init?.headers,
+      ? { "Content-Type": "application/json", ...setupHeaders(), ...init.headers }
+      : { ...setupHeaders(), ...init?.headers },
     cache: "no-store",
   });
   const payload = (await response.json()) as APIResponse<T>;
@@ -127,7 +131,7 @@ export default function Install() {
     setError("");
     setRestoring(true);
     setRestoreProgress(0);
-    const task = createChunkUploadTask("/api/install/upload");
+    const task = createChunkUploadTask("/api/install/upload", setupHeaders());
     restoreTaskRef.current = task;
     let restored = false;
     try {
