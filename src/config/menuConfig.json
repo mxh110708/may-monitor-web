@@ -1,5 +1,6 @@
 {
   "menu": [
+    { "labelKey": "may.alerts", "path": "/admin/monitoring", "icon": "Activity" },
     {
       "labelKey": "common.dashboard",
       "path": "/admin/dashboard",
@@ -149,7 +150,7 @@
     },
     {
       "labelKey": "common.documentation",
-      "path": "https://komari-document.pages.dev/",
+      "path": "https://github.com/mxh110708/may-monitor-server/blob/main/README.md",
       "icon": "Book",
       "newTab": true,
       "bottom": true

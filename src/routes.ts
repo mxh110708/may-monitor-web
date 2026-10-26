@@ -51,6 +51,7 @@ export const routes: RouteObject[] = [
     element: React.createElement(AdminLayout),
     children: [
       { index: true, element: React.createElement(Navigate, { to: "/admin/dashboard", replace: true }) },
+      { path: "monitoring", element: React.createElement(lazy(() => import("./pages/admin/monitoring"))) },
       {
         path: "dashboard",
         element: React.createElement(Dashboard),

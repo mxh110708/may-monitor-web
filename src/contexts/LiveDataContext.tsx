@@ -12,6 +12,7 @@ import type {
   Record as LiveRecord,
 } from "../types/LiveData";
 import { useRPC2Call } from "./RPC2Context";
+import { nodeStatus, monitoringError } from "../utils/monitoringStatus";
 
 const LIVE_DATA_INTERVAL_MS = 2000;
 
@@ -45,7 +46,7 @@ const mergeLiveData = (
   previous: LiveDataResponse | null,
 ): LiveDataResponse => {
   const nextOnline = Object.values(result)
-    .filter((value: any) => value?.online)
+    .filter((value: any) => nodeStatus(value) === "online")
     .map((value: any) => value.client as string);
   const previousData = previous?.data;
   const online =
@@ -53,18 +54,24 @@ const mergeLiveData = (
       ? previousData.online
       : nextOnline;
   const data: Record<string, LiveRecord> = {};
+  const states: NonNullable<LiveDataResponse["data"]["states"]> = {};
   let changed = !previousData || online !== previousData.online;
 
   for (const [uuid, value] of Object.entries(result)) {
     const record = value as any;
+    const state = nodeStatus(record);
+    states[uuid] = state;
+    if (previousData?.states?.[uuid] !== state) changed = true;
+    // Missing, stale or invalid measurements never become a zero-load record.
+    if (state !== "online") continue;
     const nextRecord: LiveRecord = {
       cpu: { usage: typeof record.cpu === "number" ? record.cpu : 0 },
       ram: { used: record.ram ?? 0 },
       swap: { used: record.swap ?? 0 },
       load: {
         load1: record.load ?? 0,
-        load5: record.load5 ?? 0,
-        load15: record.load15 ?? 0,
+        load5: record.load5,
+        load15: record.load15,
       },
       disk: { used: record.disk ?? 0 },
       network: {
@@ -103,19 +110,21 @@ const mergeLiveData = (
   }
 
   if (!changed && previous) return previous;
-  return { data: { online, data }, status: "ok" };
+  return { data: { online, data, states }, status: "ok" };
 };
 
 // 创建Context
 interface LiveDataContextType {
   live_data: LiveDataResponse | null;
   showCallout: boolean;
+  fetchState: "loading" | "ready" | "auth_error" | "unreachable";
   onRefresh: (callback: (data: LiveDataResponse) => void) => () => void;
 }
 
 const LiveDataContext = createContext<LiveDataContextType>({
   live_data: null,
   showCallout: true,
+  fetchState: "loading",
   onRefresh: () => () => {},
 });
 
@@ -126,6 +135,7 @@ export const LiveDataProvider: React.FC<{ children: React.ReactNode }> = ({
   const [live_data, setLiveData] = useState<LiveDataResponse | null>(null);
   const liveDataRef = useRef<LiveDataResponse | null>(null);
   const [showCallout, setShowCallout] = useState(false);
+  const [fetchState, setFetchState] = useState<LiveDataContextType["fetchState"]>("loading");
   const refreshCallbacksRef = useRef<Set<(data: LiveDataResponse) => void>>(
     new Set(),
   );
@@ -149,6 +159,7 @@ export const LiveDataProvider: React.FC<{ children: React.ReactNode }> = ({
     let timer: number | undefined;
     let stopped = false;
     let running = false; // 防抖：避免并发请求
+    let retryDelay = LIVE_DATA_INTERVAL_MS;
     const refreshCallbacks = refreshCallbacksRef.current;
 
     const clearTimer = () => {
@@ -161,7 +172,7 @@ export const LiveDataProvider: React.FC<{ children: React.ReactNode }> = ({
     const scheduleNext = () => {
       clearTimer();
       if (!stopped && !document.hidden) {
-        timer = window.setTimeout(fetchLatest, LIVE_DATA_INTERVAL_MS);
+        timer = window.setTimeout(fetchLatest, retryDelay);
       }
     };
 
@@ -172,6 +183,8 @@ export const LiveDataProvider: React.FC<{ children: React.ReactNode }> = ({
         // 策略由 RPC2Client 内部实现
         const result: Record<string, any> = await call(
           "common:getNodesLatestStatus",
+          undefined,
+          { timeout: 10000 },
         );
         if (stopped) return;
         const live = mergeLiveData(result, liveDataRef.current);
@@ -181,9 +194,18 @@ export const LiveDataProvider: React.FC<{ children: React.ReactNode }> = ({
           notifyRefreshCallbacks(live);
         }
         setShowCallout(true);
+        setFetchState("ready");
+        retryDelay = LIVE_DATA_INTERVAL_MS;
       } catch (e) {
         if (stopped) return;
-        console.error("RPC2 获取最新状态失败:", e);
+        setFetchState(monitoringError(e));
+        retryDelay = 15000;
+        const previous = liveDataRef.current;
+        if (previous) {
+          const unknown: LiveDataResponse = { status: "unavailable", data: { online: [], data: {}, states: Object.fromEntries(Object.keys(previous.data.states ?? previous.data.data).map(id => [id, "unknown" as const])) } };
+          liveDataRef.current = unknown;
+          setLiveData(unknown);
+        }
         setShowCallout(false);
       } finally {
         running = false;
@@ -211,8 +233,8 @@ export const LiveDataProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [call, notifyRefreshCallbacks]);
 
   const contextValue = useMemo(
-    () => ({ live_data, showCallout, onRefresh }),
-    [live_data, showCallout, onRefresh],
+    () => ({ live_data, showCallout, fetchState, onRefresh }),
+    [live_data, showCallout, fetchState, onRefresh],
   );
 
   return (

@@ -233,7 +233,7 @@ const Index = () => {
 //#region Callouts
 const Callouts = () => {
   const [t] = useTranslation();
-  const { showCallout } = useLiveData();
+  const { showCallout, fetchState } = useLiveData();
   const ishttps = window.location.protocol === "https:";
   return (
     <Flex direction="column" gap="2" className="km-callouts m-2">
@@ -263,7 +263,7 @@ const Callouts = () => {
       </Callout.Root>
       <Callout.Root
         m="2"
-        hidden={showCallout}
+        hidden={showCallout || fetchState === "loading"}
         id="callout"
         color="tomato"
         className="km-callout km-callout-websocket"
@@ -283,7 +283,7 @@ const Callouts = () => {
         </Callout.Icon>
         <Callout.Text>
           <Text size="2" weight="medium">
-            {t("warn_websocket")}
+            {t(`may.${fetchState}`)}
           </Text>
         </Callout.Text>
       </Callout.Root>

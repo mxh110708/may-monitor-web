@@ -9,10 +9,10 @@ const seenKey = "_komari_notification_channels_1_6_0_seen";
 
 function isLegacyNotificationVersion(version: string | null): boolean {
   if (version === null) return false;
-  if (version === "") return true;
+  if (version === "") return false;
   const match = /^v?(\d+)\.(\d+)\.(\d+)(?:[-+].*)?$/.exec(version);
   return match !== null &&
-    (Number(match[1]) < 1 || (Number(match[1]) === 1 && Number(match[2]) < 6));
+    Number(match[1]) === 1 && Number(match[2]) < 6;
 }
 
 export default function NotificationUpgradeNotice({

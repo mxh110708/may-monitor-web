@@ -62,7 +62,7 @@ const Footer = () => {
             }}
           ></span>
           <Text size="2" color="gray">
-            Powered by Komari Monitor.
+            May Monitor · Based on Komari Monitor.
           </Text>
         </Text>
       ) : (
@@ -82,7 +82,7 @@ const Footer = () => {
             align={{ initial: "center", md: "start" }}
           >
             <Text size="2" color="gray">
-              Powered by Komari Monitor.
+              May Monitor · Based on Komari Monitor.
             </Text>
             {buildTime && (
               <Text size="1" color="gray">

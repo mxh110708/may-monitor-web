@@ -20,7 +20,7 @@ const NavBar = () => {
       <div className="km-navbar-brand mr-auto flex items-center min-w-0">
         <Link to="/" className="flex items-center min-w-0">
           <span className="font-bold text-[clamp(1.25rem,5vw,1.875rem)] whitespace-nowrap truncate leading-tight">
-            {publicInfo?.sitename}
+            {publicInfo?.sitename && !["Komari", "Komari Monitor"].includes(publicInfo.sitename) ? publicInfo.sitename : "May Monitor"}
           </span>
         </Link>
         <div className="hidden flex-row items-baseline md:flex ml-3">
@@ -32,7 +32,7 @@ const NavBar = () => {
             className="text-base font-bold whitespace-nowrap"
             style={{ color: "var(--accent-4)" }}
           >
-            Komari Monitor
+            May Monitor
           </span>
         </div>
       </div>
@@ -41,7 +41,7 @@ const NavBar = () => {
         <IconButton
           variant="soft"
           onClick={() => {
-            window.open("https://github.com/komari-monitor", "_blank");
+            window.open("https://github.com/mxh110708/may-monitor-server", "_blank", "noopener,noreferrer");
           }}
         >
           <GitHubLogoIcon />

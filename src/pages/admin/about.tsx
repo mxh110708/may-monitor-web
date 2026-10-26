@@ -17,12 +17,16 @@ export default function AboutPage() {
   const { t, i18n } = useTranslation();
   const [view, setView] = useState("open_source");
   useEffect(() => {
+    if (view !== "readme") return;
+    const controller = new AbortController();
     fetch(
-      "https://raw.githubusercontent.com/komari-monitor/komari/refs/heads/main/README.md"
+      "https://raw.githubusercontent.com/mxh110708/may-monitor-server/refs/heads/main/README.md", { signal: controller.signal }
     )
-      .then((res) => res.text())
-      .then(setMarkdown);
-  }, []);
+      .then((res) => { if (!res.ok) throw new Error("readme unavailable"); return res.text(); })
+      .then(text => { if (!controller.signal.aborted) setMarkdown(text); })
+      .catch(() => { if (!controller.signal.aborted) setMarkdown(i18n.language.startsWith("zh") ? "说明文档暂不可用，请使用下方链接查看。" : "Documentation is unavailable. Use the link below."); });
+    return () => controller.abort();
+  }, [view, i18n.language]);
 
   const dependencies = [
     ...webDependencies,
@@ -34,7 +38,7 @@ export default function AboutPage() {
 
   return (
     <div className="km-page-admin-about km-about-content flex flex-col gap-4">
-      <h1 className="km-about-title text-2xl font-bold text-foreground">{t("common.about")}</h1>
+      <h1 className="km-about-title text-2xl font-bold text-foreground">May Monitor · {t("common.about")}</h1>
       <SegmentedControl.Root defaultValue={view} onValueChange={setView}>
         <SegmentedControl.Item value="open_source">
           {t("about.open_source_title")}
@@ -103,7 +107,7 @@ export default function AboutPage() {
                   )}
                 </div>
                 <a
-                  href="https://github.com/komari-monitor/komari/blob/main/README.md"
+                  href="https://github.com/mxh110708/may-monitor-server/blob/main/README.md"
                   target="_blank"
                   rel="noreferrer"
                   className="flex flex-row gap-2 text-sm items-center"

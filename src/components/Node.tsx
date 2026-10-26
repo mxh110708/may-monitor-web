@@ -36,6 +36,7 @@ interface NodeProps {
   online: boolean;
   isMobile: boolean;
   showIpTagsInCard: boolean;
+  state?: string;
 }
 const DEFAULT_NODE_LIVE = {
   cpu: { usage: 0 },
@@ -52,7 +53,7 @@ const DEFAULT_NODE_LIVE = {
 } as Record;
 
 const Node = React.memo(
-  ({ basic, live, online, isMobile, showIpTagsInCard }: NodeProps) => {
+  ({ basic, live, online, isMobile, showIpTagsInCard, state }: NodeProps) => {
   const [t] = useTranslation();
   const liveData = live || DEFAULT_NODE_LIVE;
   const osImage = React.useMemo(() => getOSImage(basic.os), [basic.os]);
@@ -69,6 +70,14 @@ const Node = React.memo(
   const downloadSpeed = formatBytes(liveData.network.down);
   const totalUpload = formatBytes(liveData.network.totalUp);
   const totalDownload = formatBytes(liveData.network.totalDown);
+  if (!live) return (
+    <Card className="km-node-card node-card" id={basic.uuid}>
+      <Flex direction="column" gap="3">
+        <Flex justify="between" gap="2"><Link to={`/instance/${basic.uuid}`}><Text weight="bold">{basic.name}</Text></Link><Badge color={state === "offline" ? "red" : "gray"}>{t(`may.node.${state || "waiting"}`)}</Badge></Flex>
+        <Text size="2" color="gray">{t("may.no_metrics")}</Text>
+      </Flex>
+    </Card>
+  );
   //const totalTraffic = formatBytes(liveData.network.totalUp + liveData.network.totalDown);
   return (
     <Card
@@ -349,6 +358,7 @@ export const NodeGrid = ({ nodes, liveData, onlineSet }: NodeGridProps) => {
             basic={node}
             live={nodeData}
             online={isOnline}
+            state={liveData.states?.[node.uuid]}
             isMobile={isMobile}
             showIpTagsInCard={showIpTagsInCard}
           />

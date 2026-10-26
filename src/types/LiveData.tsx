@@ -1,6 +1,7 @@
 export type LiveData = {
     online: string[];
     data: { [key: string]: Record };
+    states?: { [key: string]: import("../utils/monitoringStatus").NodeStatus };
 };
 
 export type Record = {

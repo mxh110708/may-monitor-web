@@ -17,6 +17,7 @@ jobs:
           npm ci --ignore-scripts
           npm audit
           npm run test:security
+          npm run test:monitoring
           npm run test:onboarding
           npm run lint
           npm run build

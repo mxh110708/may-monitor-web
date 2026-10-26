@@ -1,13 +1,14 @@
 {
   "name": "may-monitor-web",
   "private": true,
-  "version": "0.1.0-rc.1",
+  "version": "0.1.0-rc.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "test:onboarding": "node --experimental-strip-types --test script/onboarding.test.mjs",
+    "test:monitoring": "node --experimental-strip-types --test script/monitoring.test.mjs",
     "preview": "vite preview",
     "i18n:sync": "node ./script/i18n-sync.mjs",
     "i18n:sync:dry": "node ./script/i18n-sync.mjs --dry-run",

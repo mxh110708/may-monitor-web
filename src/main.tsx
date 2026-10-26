@@ -35,10 +35,9 @@ const App = () => {
   ].includes(restrictedPath);
   React.useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const tempKey = params.get("temp_key");
-
-    if (tempKey) {
-      document.cookie = `temp_key=${tempKey}; path=/; max-age=${60 * 60 * 24 * 365 * 100}`;
+    if (params.has("temp_key")) {
+      // Temporary-share authentication is disabled by the reviewed operator policy.
+      // Never promote a URL parameter to a persistent credential.
       params.delete("temp_key");
       window.history.replaceState(
         {},

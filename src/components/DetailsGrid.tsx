@@ -68,26 +68,26 @@ export const DetailsGrid = ({
         <UpDownStack
           className="km-details-item md:w-64 w-full flex-[0_0_calc(50%-0.5rem)]"
           up={t("nodeCard.networkSpeed")}
-          down={` ↑ ${formatBytes(
-            currentRecord?.network.up || 0
+          down={currentRecord ? ` ↑ ${formatBytes(
+            currentRecord.network.up
           )}/s
           ↓
           ${formatBytes(
-            currentRecord?.network.down || 0
-          )}/s`}
+            currentRecord.network.down
+          )}/s` : "—"}
         />
         <UpDownStack
           up={t("nodeCard.totalTraffic")}
           align={align === "center" ? "end" : "start"}
           className="km-details-item flex-[0_0_calc(50%-0.5rem)]"
-            down={`↑
+            down={currentRecord ? `↑
           ${formatBytes(
-              currentRecord?.network.totalUp || 0
+              currentRecord.network.totalUp
             )}
           ↓
           ${formatBytes(
-              currentRecord?.network.totalDown || 0
-            )}`}
+              currentRecord.network.totalDown
+            )}` : "—"}
         />
         <UpDownStack
           className="km-details-item md:w-70 w-full flex-[0_0_calc(50%-0.5rem)]"

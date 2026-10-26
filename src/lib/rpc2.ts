@@ -282,7 +282,7 @@ export class RPC2Client {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        throw Object.assign(new Error(`HTTP ${response.status}: ${response.statusText}`), { status: response.status });
       }
 
       if (options.notification) {
@@ -292,7 +292,7 @@ export class RPC2Client {
       const jsonResponse: JSONRPC2Response<TResult> = await response.json();
 
       if ("error" in jsonResponse) {
-        throw new Error(`RPC Error ${jsonResponse.error.code}: ${jsonResponse.error.message}`);
+        throw Object.assign(new Error(`RPC Error ${jsonResponse.error.code}: ${jsonResponse.error.message}`), { code: jsonResponse.error.code });
       }
 
       return jsonResponse.result;
@@ -331,14 +331,14 @@ export class RPC2Client {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        throw Object.assign(new Error(`HTTP ${response.status}: ${response.statusText}`), { status: response.status });
       }
 
       const jsonResponse: JSONRPC2BatchResponse = await response.json();
 
       return jsonResponse.map(res => {
         if ("error" in res) {
-          throw new Error(`RPC Error ${res.error.code}: ${res.error.message}`);
+          throw Object.assign(new Error(`RPC Error ${res.error.code}: ${res.error.message}`), { code: res.error.code });
         }
         return res.result;
       });
@@ -482,7 +482,7 @@ export class RPC2Client {
     }
 
     if ("error" in data) {
-      pending.reject(new Error(`RPC Error ${data.error.code}: ${data.error.message}`));
+      pending.reject(Object.assign(new Error(`RPC Error ${data.error.code}: ${data.error.message}`), { code: data.error.code }));
     } else {
       pending.resolve(data.result);
     }

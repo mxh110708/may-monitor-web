@@ -334,6 +334,13 @@ const NodeTable: React.FC<NodeTableProps> = ({ nodes, liveData, onlineSet }) => 
             const isOnline = onlineSet.has(node.uuid);
             const nodeData = getNodeData(node.uuid);
             const isExpanded = expandedRows.has(node.uuid);
+            if (!liveData.data[node.uuid]) return (
+              <TableRow key={node.uuid}>
+                <TableCell />
+                <TableCell><Link to={`/instance/${node.uuid}`}>{node.name}</Link></TableCell>
+                <TableCell colSpan={11}><Badge color="gray">{t(`may.node.${liveData.states?.[node.uuid] || "waiting"}`)}</Badge><span className="ml-3">{t("may.no_metrics")}</span></TableCell>
+              </TableRow>
+            );
 
             const memoryUsagePercent = node.mem_total
               ? (nodeData.ram.used / node.mem_total) * 100

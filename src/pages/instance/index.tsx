@@ -218,6 +218,7 @@ export default function InstancePage() {
       )}
       <div className="km-instance-main flex flex-col h-full items-center gap-2">
         <div className="km-instance-header flex flex-col gap-1 md:p-4 p-3 border-0 rounded-md">
+          <Text color="gray" size="2">{t(`may.node.${uuid ? live_data?.data.states?.[uuid] || "waiting" : "waiting"}`)}</Text>
           <h1 className="km-instance-title flex items-center flex-wrap">
             <Flag flag={node?.region ?? ""} />
             <Text size="3" weight="bold" wrap="nowrap">

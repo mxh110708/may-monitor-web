@@ -73,7 +73,12 @@ const AdminPanelBar = ({ content, onboardingReady = false }: AdminPanelBarProps)
   const ishttps = window.location.protocol === "https:";
   const [t, i18n] = useTranslation();
   const location = useLocation();
-  const onboarding = useAdminGuide(onboardingReady);
+  const { publicInfo } = usePublicInfo();
+  const remoteControl = publicInfo?.may_capabilities?.remote_control === true;
+  const extensions = publicInfo?.may_capabilities?.extensions === true;
+  const reviewedTheme = publicInfo?.may_capabilities?.reviewed_theme === true;
+  const debugTools = publicInfo?.may_capabilities?.debug === true;
+  const onboarding = useAdminGuide(onboardingReady && remoteControl && extensions);
   const sidebarBeforeGuide = useRef<{
     open: boolean;
     subMenus: Record<string, boolean>;
@@ -99,7 +104,6 @@ const AdminPanelBar = ({ content, onboardingReady = false }: AdminPanelBarProps)
   const isConfigFormPage =
     location.pathname === "/admin/theme_managed" ||
     location.pathname === "/admin/plugins/config";
-  const { publicInfo } = usePublicInfo();
   const { refreshVersion } = useAdminNavigation();
   //const navigate = useNavigate();
   // 获取版本信息
@@ -134,6 +138,7 @@ const AdminPanelBar = ({ content, onboardingReady = false }: AdminPanelBarProps)
   const [pluginMenuItems, setPluginMenuItems] = useState<ExtendedMenuItem[]>([]);
 
   useEffect(() => {
+    if (!extensions && !reviewedTheme) { setExtraMenuItems([]); return; }
     let ignore = false;
     async function loadThemeMenu() {
       // 仅当 theme 存在且不等于 default 时扩展
@@ -195,10 +200,11 @@ const AdminPanelBar = ({ content, onboardingReady = false }: AdminPanelBarProps)
     return () => {
       ignore = true;
     };
-  }, [currentTheme, refreshVersion]);
+  }, [currentTheme, refreshVersion, extensions, reviewedTheme]);
   // 插件注入的管理页面：manifest pages（visibility=admin）-> 插件菜单的二级菜单。
   // iframe 页面进入 plugin-page 路由；redirect 页面复用主题的站内跳转校验。
   useEffect(() => {
+    if (!extensions) { setPluginMenuItems([]); return; }
     let ignore = false;
     async function loadPluginMenu() {
       try {
@@ -246,7 +252,7 @@ const AdminPanelBar = ({ content, onboardingReady = false }: AdminPanelBarProps)
     return () => {
       ignore = true;
     };
-  }, [call, currentLanguage, refreshVersion]);
+  }, [call, currentLanguage, refreshVersion, extensions]);
 
   useEffect(() => {
     const fetchVersionInfo = async () => {
@@ -294,7 +300,7 @@ const AdminPanelBar = ({ content, onboardingReady = false }: AdminPanelBarProps)
     async function loadReleases() {
       try {
         const resp = await fetch(
-          "https://api.github.com/repos/komari-monitor/komari/releases?per_page=100",
+          "https://api.github.com/repos/mxh110708/may-monitor-server/releases?per_page=100",
           {
             headers: {
               Accept: "application/vnd.github+json",
@@ -339,7 +345,10 @@ const AdminPanelBar = ({ content, onboardingReady = false }: AdminPanelBarProps)
   // 外观与插件保留管理入口；插件自定义页面使用独立的插件功能菜单。
   const mergedBaseMenuItems: ExtendedMenuItem[] = useMemo(() => {
     return baseMenuItems.flatMap((item): ExtendedMenuItem[] => {
+      if (item.path === "/terminal" && !remoteControl) return [];
+      if (item.path === "/admin/ping") return [{ ...item, children: item.children?.filter(child => (child.path !== "/admin/exec" || remoteControl) && (child.path !== "/admin/pprof" || debugTools)) }];
       if (item.labelKey === "adminNavigation.extensions") {
+        if (!extensions) return reviewedTheme ? extraMenuItems : [];
         const children = item.children || [];
         return [
           {
@@ -362,7 +371,7 @@ const AdminPanelBar = ({ content, onboardingReady = false }: AdminPanelBarProps)
       }
       return [item];
     });
-  }, [extraMenuItems, pluginMenuItems]);
+  }, [extraMenuItems, pluginMenuItems, remoteControl, extensions, debugTools, reviewedTheme]);
   const bottomStartPath = mergedBaseMenuItems.find(
     (item) => item.bottom,
   )?.path;
@@ -484,7 +493,7 @@ const AdminPanelBar = ({ content, onboardingReady = false }: AdminPanelBarProps)
                 <TablerMenu2 />
               </IconButton>
               <a href="/" target="_blank" rel="noopener noreferrer">
-                <label className="text-xl font-bold">Komari</label>
+                <label className="text-xl font-bold">May Monitor</label>
               </a>
               {updateAvailable && releasesSince.length > 0 && (
                 <Tips

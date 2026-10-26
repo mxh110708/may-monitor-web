@@ -46,6 +46,7 @@ export interface PublicInfo {
   private_site: boolean;
   theme: string;
   theme_settings: any;
+  may_capabilities?: { remote_control: boolean; extensions: boolean; debug: boolean; reviewed_theme?: boolean };
   [property: string]: any;
 }
 
