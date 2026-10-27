@@ -22,8 +22,8 @@ synthetic DOM tests do not replace real SSO, browser/device accessibility,
 remote terminal or production deployment acceptance. See the workspace report
 for the exact reviewed source manifest and remaining boundaries.
 
-## First May prerelease
+## Review provenance and current release
 
-`v0.1.0-rc.1` packages this reviewed monitoring profile. See the [shared security review](https://github.com/mxh110708/may-monitor-server/blob/v0.1.0-rc.1/docs/SECURITY-REVIEW-2026-10-24.zh-CN.md). Release manifests pin all three source commits. No automatic installation or production migration is authorized.
+`v0.1.0-rc.1` was the first package of the reviewed profile; the current documentation baseline is stable `0.1.0`, including the later fixes recorded in release notes. The initial review is historical evidence, not a renewed audit of every later commit. See the [shared security review](https://github.com/mxh110708/may-monitor-server/blob/v0.1.0-rc.1/docs/SECURITY-REVIEW-2026-10-24.zh-CN.md). Release manifests pin all three source commits. No automatic installation or production migration is authorized.
 
 The Service Worker precaches immutable assets only. API responses always go to the server; authenticated data must not be restored from a runtime cache after logout or revocation. Run `npm run test:service-worker` after building.

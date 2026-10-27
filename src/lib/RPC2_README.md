@@ -1,5 +1,8 @@
 # RPC2 客户端使用指南
 
+> 文档定位：底层 RPC2 开发参考；前端不能绕过 Server 的身份和能力策略。当前使用见[Web 教程](../../docs/USER-GUIDE.zh-CN.md)。
+
+
 这个 RPC2 客户端实现了 JSON-RPC 2.0 标准，支持通过 WebSocket 和 HTTP POST 调用 Komari 的 `/api/rpc2` 接口。
 
 ## 特性
