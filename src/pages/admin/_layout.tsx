@@ -5,7 +5,6 @@ import { AdminNavigationProvider } from "@/contexts/AdminNavigationContext";
 import { AccountProvider } from "@/contexts/AccountContext";
 import { updateSettingsWithToast, useSettings } from "@/lib/api";
 import { Button, Dialog } from "@radix-ui/themes";
-import NotificationUpgradeNotice from "@/components/admin/NotificationUpgradeNotice";
 import { useEffect, useState } from "react";
 import { getEula } from "@/utils/eula";
 import { normalizeLanguage, readStoredLanguage } from "@/utils/language";
@@ -19,7 +18,6 @@ const AdminLayout = () => {
   const { settings, loading, error, setSettings } = useSettings();
   const lang = readStoredLanguage() || "en";
   const [open, setOpen] = useState(false);
-  const [noticePending, setNoticePending] = useState(true);
   const eulaPending =
     normalizeLanguage(lang).startsWith("zh") && settings?.eula_accepted === false;
   const noticesReady = !loading && !error && !open && !eulaPending;
@@ -75,16 +73,10 @@ const AdminLayout = () => {
           </Dialog.Content>
         </Dialog.Content>
       </Dialog.Root>
-      <NotificationUpgradeNotice
-        ready={noticesReady}
-        onPendingChange={setNoticePending}
-      />
       <AdminNavigationProvider>
         <AdminPanelBar
           content={<Outlet />}
-          onboardingReady={
-            noticesReady && !noticePending
-          }
+          onboardingReady={noticesReady}
         />
       </AdminNavigationProvider>
     </>
