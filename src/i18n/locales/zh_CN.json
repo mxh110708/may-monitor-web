@@ -1713,6 +1713,16 @@
     "event": {
       "firing": "异常告警",
       "recovered": "已恢复"
-    }
+    },
+    "delivery_channel": "通知渠道",
+    "channel": {
+      "none": "不发送",
+      "local": "本地 HTTP 接收器",
+      "email": "邮件（SMTP）"
+    },
+    "email_unconfigured": "邮件尚未配置。规则继续评估，不会发信；请按照邮件配置手册设置服务器上的 notification-smtp.json。",
+    "email_configured": "私密 SMTP 配置已就绪，尚不代表邮件已成功投递到收件箱。",
+    "email_invalid": "SMTP 配置无效或文件权限不安全，请检查服务器的邮件配置。",
+    "delivery_disabled_help": "继续评估规则并保留事件，不发送通知。"
   }
 }

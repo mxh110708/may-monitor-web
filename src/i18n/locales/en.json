@@ -1713,6 +1713,16 @@
     "event": {
       "firing": "Alert",
       "recovered": "Recovered"
-    }
+    },
+    "delivery_channel": "Notification channel",
+    "channel": {
+      "none": "Disabled",
+      "local": "Local HTTP receiver",
+      "email": "Email (SMTP)"
+    },
+    "email_unconfigured": "Email is not configured. Rule evaluation continues without sending mail. Configure notification-smtp.json on the server as described in the email setup guide.",
+    "email_configured": "Private SMTP configuration is available. This does not yet confirm delivery to the inbox.",
+    "email_invalid": "SMTP configuration is invalid or has unsafe file permissions. Check the server email configuration.",
+    "delivery_disabled_help": "Evaluate rules and retain events without sending notifications."
   }
 }

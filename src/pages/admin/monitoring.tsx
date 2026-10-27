@@ -7,9 +7,9 @@ import { monitoringError } from "@/utils/monitoringStatus";
 import { Link } from "react-router-dom";
 
 type Rule = { id: string; name: string; enabled: boolean; kind: string; nodes: string[]; task_id?: number; region?: string; threshold: number; confirm: number; recover: number; window: number; cooldown_seconds: number; silence_until?: string };
-type Policy = { schema: number; enabled: boolean; local_receiver: string; rules: Rule[] };
+type Policy = { delivery?: "local" | "email" | "none"; schema: number; enabled: boolean; local_receiver: string; rules: Rule[] };
 type State = { rule_id: string; node: string; phase: string; active: boolean; value: number | null; evidence_at: string; silenced: boolean; delivery: string; delivery_attempts: number; delivery_error?: string };
-type Status = { policy: Policy; evaluated_at: string; total: number; states: State[]; pending: number; storage_error: boolean; source_error?: string; history: { event: { id: string; rule_name: string; node: string; kind: string }; status: string; attempts: number; at: string }[] };
+type Status = { email?: string; policy: Policy; evaluated_at: string; total: number; states: State[]; pending: number; storage_error: boolean; source_error?: string; history: { event: { id: string; rule_name: string; node: string; kind: string }; status: string; attempts: number; at: string }[] };
 type Probe = { id: number; name: string; type: string; interval: number; clients: string[] };
 const empty: Policy = { schema: 1, enabled: false, local_receiver: "", rules: [] };
 const kinds = ["offline", "latency", "failure_rate", "cpu", "memory", "disk"];
@@ -72,8 +72,11 @@ export default function MonitoringPage() {
     {status?.source_error && <Text color="orange">{t("may.source_error")}</Text>}
     <Card><Flex direction="column" gap="3">
       <label><Checkbox checked={policy.enabled} onCheckedChange={v => edit({ ...policy, enabled: v === true })} /> {t("may.enable")}</label>
-      <label>{t("may.receiver")}<TextField.Root aria-label={t("may.receiver")} placeholder="http://127.0.0.1:8765/events" value={policy.local_receiver} onChange={e => edit({ ...policy, local_receiver: e.target.value })} /></label>
-      <Text size="2" color="gray">{t("may.receiver_help")}</Text>
+      <label>{t("may.delivery_channel")}<Select.Root value={policy.delivery || "local"} onValueChange={value => edit({ ...policy, delivery: value as Policy["delivery"] })}><Select.Trigger aria-label={t("may.delivery_channel")} /><Select.Content>{["none", "local", "email"].map(value => <Select.Item key={value} value={value}>{t(`may.channel.${value}`)}</Select.Item>)}</Select.Content></Select.Root></label>
+      {(policy.delivery || "local") === "local" && <><label>{t("may.receiver")}<TextField.Root aria-label={t("may.receiver")} placeholder="http://127.0.0.1:8765/events" value={policy.local_receiver} onChange={e => edit({ ...policy, local_receiver: e.target.value })} /></label>
+      <Text size="2" color="gray">{t("may.receiver_help")}</Text></>}
+      {policy.delivery === "email" && <Text size="2" role="status" color={status?.email === "configured" ? "gray" : "orange"}>{t(`may.email_${status?.email || "unconfigured"}`)}</Text>}
+      {policy.delivery === "none" && <Text size="2" color="gray">{t("may.delivery_disabled_help")}</Text>}
       <Flex gap="3" wrap="wrap"><Button disabled={saving || !status || !changed} onClick={() => void save()}>{saving ? t("may.saving") : t("may.save")}</Button>{saved && <Text color="green" role="status">{t("may.saved")}</Text>}<Link to="/admin/ping">{t("may.probes")}</Link></Flex>
     </Flex></Card>
     <Flex justify="between"><Heading size="4">{t("may.rules")}</Heading><Button variant="soft" disabled={policy.rules.length >= 32 || !nodeList.length} onClick={() => edit({ ...policy, rules: [...policy.rules, { id: crypto.randomUUID(), name: t("may.new_rule"), enabled: false, kind: "offline", nodes: [nodeList[0].uuid], threshold: 0, confirm: 3, recover: 2, window: 5, cooldown_seconds: 300 }] })}>{t("may.add")}</Button></Flex>
