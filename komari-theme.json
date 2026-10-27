@@ -2,7 +2,7 @@
   "name": "May Monitor",
   "short": "default",
   "description": "May Monitor default frontend (Komari fork)",
-  "version": "0.1.0-rc.3",
+  "version": "0.1.0-rc.4",
   "author": "Akizon77",
   "url": "https://github.com/mxh110708/may-monitor-web",
   "preview": "dist/assets/edit_117847723_p0.webp",

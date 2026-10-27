@@ -68,7 +68,7 @@ export default defineConfig(({ mode }) => {
       }),
       VitePWA({
         registerType: "autoUpdate",
-        includeAssets: ["may-monitor.svg", "favicon.ico", "assets/pwa-icon.webp"],
+        includeAssets: ["favicon.ico", "icons/plum-blossoms-180.png", "icons/plum-blossoms-192.png", "icons/plum-blossoms-512.png"],
         manifest: {
           name: "May Monitor",
           short_name: "May Monitor",
@@ -80,16 +80,16 @@ export default defineConfig(({ mode }) => {
           start_url: base,
           icons: [
             {
-              src: `${base}may-monitor.svg`,
+              src: `${base}icons/plum-blossoms-192.png`,
               sizes: "192x192",
-              type: "image/svg+xml",
-              purpose: "maskable any",
+              type: "image/png",
+              purpose: "any",
             },
             {
-              src: `${base}may-monitor.svg`,
+              src: `${base}icons/plum-blossoms-512.png`,
               sizes: "512x512",
-              type: "image/svg+xml",
-              purpose: "maskable any",
+              type: "image/png",
+              purpose: "any",
             },
           ],
         },
