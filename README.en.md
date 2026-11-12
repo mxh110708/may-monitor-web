@@ -38,4 +38,8 @@ npm run test:service-worker
 
 The resulting `dist/` must be embedded through the Server's [fixed build procedure](https://github.com/mxh110708/may-monitor-server/blob/main/docs/BUILD.md). Preview only serves static build output. Tests and compilation do not replace browser, accessibility or real provider acceptance.
 
-Derived from [Komari Web](https://github.com/komari-monitor/komari-web); retain upstream attribution and each dependency's license requirements. This checkout has no separate root license file. Historical upstream workflows remain inactive references; they do not authorize automatic upstream publishing or deployment.
+## Upstream and licensing
+
+May Monitor Web is derived from [Komari Web](https://github.com/komari-monitor/komari-web) and maintained in a standalone GitHub repository outside its fork network. Upstream changes are reviewed and adopted as needed, without automatic synchronization or release adoption.
+
+Upstream commit history, copyright and each dependency's license requirements are retained. This checkout has no separate root license file; creating a standalone repository does not change those obligations. Historical upstream workflows remain inactive references and do not authorize automatic upstream publishing or deployment.
